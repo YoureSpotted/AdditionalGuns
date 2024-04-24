@@ -2,40 +2,43 @@ package haloofblocks.additionalguns;
 
 import haloofblocks.additionalguns.common.item.AdditionalGunItem;
 import haloofblocks.additionalguns.core.registry.ItemRegistry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.CreativeModeTabEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.DeferredRegister;
 
-/**
- * @author Autovw
- */
+
+@Mod.EventBusSubscriber(modid = AdditionalGuns.ID, value = Dist.CLIENT)
 public class AdditionalGunsTab {
-    AdditionalGunsTab() {
-    }
 
-    @SubscribeEvent
-    public void onRegisterCreativeModeTab(final CreativeModeTabEvent.Register event) {
-        event.registerCreativeModeTab(new ResourceLocation(AdditionalGuns.ID), builder -> {
-            builder.title(Component.translatable("itemGroup." + AdditionalGuns.ID));
-            builder.icon(() -> {
-                ItemStack stack = ItemRegistry.ACE_OF_SPADES.get().getDefaultInstance();
-                stack.getOrCreateTag().putBoolean("IgnoreAmmo", true);
-                return stack;
-            });
-            builder.displayItems((flags, entries) -> {
-                ItemRegistry.ITEMS.getEntries().stream().map(RegistryObject::get).forEach((entry) -> {
-                    if (entry instanceof AdditionalGunItem gunItem) {
-                        ItemStack stack = gunItem.getDefaultInstance();
-                        stack.getOrCreateTag().putInt("AmmoCount", gunItem.getGun().getGeneral().getMaxAmmo());
-                        entries.accept(stack);
-                    } else {
-                        entries.accept(entry);
-                    }
-                });
+    public static void registerCreativeTab(IEventBus bus)
+    {
+        DeferredRegister<CreativeModeTab> register = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, AdditionalGuns.ID);
+        CreativeModeTab.Builder builder = CreativeModeTab.builder();
+        builder.title(Component.translatable("creativetab.additionalguns"));
+        builder.icon(() -> {
+            ItemStack stack = new ItemStack(ItemRegistry.ACE_OF_SPADES.get());
+            stack.getOrCreateTag().putBoolean("IgnoreAmmo", true);
+            return stack;
+        });
+        builder.displayItems((flags, output) ->
+        {
+            ItemRegistry.ITEMS.getEntries().forEach(RegistryObject ->
+            {
+                if (RegistryObject.get() instanceof AdditionalGunItem gunItem) {
+                    ItemStack stack = new ItemStack(gunItem);
+                    stack.getOrCreateTag().putInt("AmmoCount", gunItem.getGun().getGeneral().getMaxAmmo());
+                    output.accept(stack);
+                    return;
+                }
+                output.accept(RegistryObject.get());
             });
         });
+        register.register("fuckyou", builder::build);
+        register.register(bus);
     }
 }

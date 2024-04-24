@@ -27,7 +27,7 @@ public class AdditionalGuns {
 
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.register(this);
-        bus.register(new AdditionalGunsTab());
+        AdditionalGunsTab.registerCreativeTab(bus);
 
         ItemRegistry.ITEMS.register(bus);
         SoundRegistry.SOUNDS.register(bus);

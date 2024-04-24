@@ -83,5 +83,5 @@
 
   "config.additionalguns.client.enable_gun_enchantment_glint": "If true, renders enchanted guns from Additional Guns with the enchantment glint.",
 
-  "itemGroup.additionalguns": "Additional Guns"
+  "creativetab.additionalguns": "Additional Guns"
 }
